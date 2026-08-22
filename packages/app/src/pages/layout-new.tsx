@@ -1,6 +1,7 @@
 import { createEffect, Suspense, type ParentProps } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DebugBar } from "@/components/debug-bar"
+import { GamesPanel } from "@/components/games-panel"
 import { TabsInfoPopup } from "@/components/help-button"
 import { Titlebar, type TitlebarUpdate } from "@/components/titlebar"
 import { usePlatform } from "@/context/platform"
@@ -42,6 +43,7 @@ export default function NewLayout(props: ParentProps) {
         <Suspense>{props.children}</Suspense>
       </main>
       {import.meta.env.DEV && state.debugTools && <DebugBar inline />}
+      <GamesPanel />
       <TabsInfoPopup />
       <ToastRegion v2 />
     </div>
