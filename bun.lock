@@ -507,6 +507,22 @@
         "typescript": "catalog:",
       },
     },
+    "packages/gamer-agent": {
+      "name": "@opencode-ai/gamer-agent",
+      "version": "1.18.21",
+      "dependencies": {
+        "@opencode-ai/core": "workspace:*",
+        "@opencode-ai/plugin": "workspace:*",
+        "effect": "catalog:",
+      },
+      "devDependencies": {
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@types/node": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/http-recorder": {
       "name": "@opencode-ai/http-recorder",
       "version": "1.18.21",
@@ -1974,6 +1990,8 @@
     "@opencode-ai/enterprise": ["@opencode-ai/enterprise@workspace:packages/enterprise"],
 
     "@opencode-ai/function": ["@opencode-ai/function@workspace:packages/function"],
+
+    "@opencode-ai/gamer-agent": ["@opencode-ai/gamer-agent@workspace:packages/gamer-agent"],
 
     "@opencode-ai/http-recorder": ["@opencode-ai/http-recorder@workspace:packages/http-recorder"],
 
