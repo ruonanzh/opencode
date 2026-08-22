@@ -16,7 +16,7 @@ import { PluginHost } from "@opencode-ai/core/plugin/host"
 import { Tool } from "@opencode-ai/core/tool/tool"
 import { Tools } from "@opencode-ai/core/tool/tools"
 import { ToolRegistry } from "@opencode-ai/core/tool/registry"
-import { Effect, Schema } from "effect"
+import { Effect, Scope, Schema } from "effect"
 import { SpikeLayer } from "./lib/spike-layer"
 
 const Input = Schema.Struct({ url: Schema.String })
@@ -26,21 +26,28 @@ const gameRepo = define({
   id: "game-repo",
   effect: Effect.fn(function* () {
     const tools = yield* Tools.Service
-    yield* tools.register({
-      clone_game: Tool.make({
-        description: "Clone a game mod repo (git clone --depth 1) into the workspace.",
-        input: Input,
-        output: Output,
-        execute: (input) => Effect.succeed({ directory: `cloned:${input.url}` }),
-      }),
-    })
+    yield* tools
+      .register({
+        clone_game: Tool.make({
+          description: "Clone a game mod repo (git clone --depth 1) into the workspace.",
+          input: Input,
+          output: Output,
+          execute: (input) => Effect.succeed({ directory: `cloned:${input.url}` }),
+        }),
+      })
+      .pipe(Effect.orDie)
   }),
 })
 
 const program = Effect.gen(function* () {
   const plugins = yield* PluginV2.Service
   const host = yield* PluginHost.make(plugins)
-  yield* plugins.add(PluginV2.ID.make(gameRepo.id), (ctx) => gameRepo.effect(ctx))
+  // gameRepo.effect yields Tools.Service from the ambient location runtime;
+  // PluginV2.add's type only declares Scope.Scope (M0.7 registration-surface
+  // gap). Runtime provides it — cast only for typecheck.
+  yield* plugins.add(PluginV2.ID.make(gameRepo.id), (ctx) =>
+    gameRepo.effect(ctx) as Effect.Effect<void, never, Scope.Scope>,
+  )
 
   const registry = yield* ToolRegistry.Service
   const materialized = yield* registry.materialize()

@@ -14,7 +14,7 @@ import { PluginV2 } from "@opencode-ai/core/plugin"
 import { PluginHost } from "@opencode-ai/core/plugin/host"
 import { SystemContext } from "@opencode-ai/core/system-context"
 import { SystemContextRegistry } from "@opencode-ai/core/system-context/registry"
-import { Effect, Schema } from "effect"
+import { Effect, Scope, Schema } from "effect"
 import { SpikeLayer } from "./lib/spike-layer"
 
 const Mod = Schema.Struct({ name: Schema.String, path: Schema.String })
@@ -42,7 +42,12 @@ const modWorkspace = define({
 const program = Effect.gen(function* () {
   const plugins = yield* PluginV2.Service
   const host = yield* PluginHost.make(plugins)
-  yield* plugins.add(PluginV2.ID.make(modWorkspace.id), (ctx) => modWorkspace.effect(ctx))
+  // modWorkspace.effect yields SystemContextRegistry.Service from the ambient
+  // location runtime; PluginV2.add's type only declares Scope.Scope (M0.7
+  // registration-surface gap). Runtime provides it — cast only for typecheck.
+  yield* plugins.add(PluginV2.ID.make(modWorkspace.id), (ctx) =>
+    modWorkspace.effect(ctx) as Effect.Effect<void, never, Scope.Scope>,
+  )
 
   const registry = yield* SystemContextRegistry.Service
   const context = yield* registry.load()
