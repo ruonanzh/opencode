@@ -54,3 +54,5 @@ export const gameRepo = define({
       .pipe(Effect.orDie)
   }),
 })
+
+export default gameRepo
