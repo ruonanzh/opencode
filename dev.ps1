@@ -12,7 +12,7 @@ if (Test-Path (Join-Path $bunBin "bun.exe")) {
 
 # --- Data isolation ---
 # Override via $env:OPENCODE_DEV_DATA if you want a different root.
-$devRoot = if ($env:OPENCODE_DEV_DATA) { $env:OPENCODE_DEV_DATA } else { "E:\opencode-dev" }
+$devRoot = if ($env:OPENCODE_DEV_DATA) { $env:OPENCODE_DEV_DATA } else { "D:\opencode-dev" }
 $env:XDG_DATA_HOME   = Join-Path $devRoot "data"
 $env:XDG_CONFIG_HOME = Join-Path $devRoot "config"
 $env:XDG_CACHE_HOME  = Join-Path $devRoot "cache"

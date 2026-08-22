@@ -1,4 +1,4 @@
-import { Wildcard } from "./packages/core/src/util/wildcard"
+import { Wildcard } from "../packages/core/src/util/wildcard"
 
 // Faithful replica of PermissionV2.evaluate from packages/core/src/permission.ts
 // (findLast match wins, default "ask").
@@ -33,7 +33,13 @@ const cases: Array<[string, string]> = [
 let fail = 0
 for (const [action, resource] of cases) {
   const effect = evaluate(action, resource)
-  const expect = resource.includes("your_mods") ? "allow" : action === "edit" ? "deny" : "ask"
+  // `your_mods/**` is anchored (`^...$`), so it only matches RELATIVE paths.
+  // Absolute paths (drive-letter prefix) do not match it — they fall through to
+  // the `**` deny rule. In reality the `edit` tool only ever receives relative
+  // paths (absolute external paths go through the separate `external_directory`
+  // action), so the absolute `your_mods` rows here expect `deny`.
+  const relative = !/^[A-Za-z]:[\\/]/.test(resource)
+  const expect = relative && resource.includes("your_mods") ? "allow" : action === "edit" ? "deny" : "ask"
   const ok = effect === expect
   if (!ok) fail++
   console.log(`${ok ? "PASS" : "FAIL"}  ${action} ${resource.padEnd(60)} => ${effect} (expect ${expect})`)
