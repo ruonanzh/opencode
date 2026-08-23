@@ -11,7 +11,7 @@ export const games: readonly Game[] = [
   {
     id: "fake-game",
     name: "Fake Game",
-    modRepoUrl: "D:/opencode-dev/fixtures/fake_game_mod",
+    modRepoUrl: "https://github.com/ruonanzh/fake-game-mod",
     workspaceName: "fake_game_mod",
   },
 ]
